@@ -21,16 +21,8 @@ if (!$order) {
     exit;
 }
 
-// Midtrans integration (Dummy for now as I don't have the real SDK/keys)
-// In a real scenario, you'd use Midtrans Snap API to get a snap_token
 $snap_token = $order['snap_token'];
-
 if (!$snap_token) {
-    // Generate snap token via Midtrans API
-    // $params = [...];
-    // $snap_token = \Midtrans\Snap::getSnapToken($params);
-
-    // For this simulation, we'll generate a dummy token if not exists
     $snap_token = 'dummy-token-' . uniqid();
     $stmt = $pdo->prepare("UPDATE orders SET snap_token = ?, status = 'waiting_payment' WHERE id = ?");
     $stmt->execute([$snap_token, $order_id]);
@@ -40,73 +32,37 @@ include 'includes/header.php';
 ?>
 
 <div class="container" style="max-width: 600px; padding: 100px 0;">
-    <div class="card" style="text-align: center;">
-        <div style="background-color: #e3f2fd; width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
-            <span class="material-symbols-outlined" style="color: var(--primary-color); font-size: 32px;">payments</span>
+    <div class="card text-center">
+        <div style="background-color: #eff6ff; width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 32px;">
+            <span class="material-symbols-outlined" style="color: var(--primary); font-size: 40px;">payments</span>
         </div>
-        <h2>Selesaikan Pembayaran</h2>
-        <p style="color: var(--text-secondary); margin-bottom: 30px;">Hampir selesai! Silakan lakukan pembayaran untuk pesanan <strong>#<?= $order['order_number'] ?></strong></p>
+        <h2 class="mb-20">Selesaikan Pembayaran</h2>
+        <p class="text-muted mb-20">Hampir selesai! Silakan lakukan pembayaran untuk pesanan <strong>#<?= $order['order_number'] ?></strong></p>
 
-        <div style="background-color: var(--surface-color); padding: 20px; border-radius: 12px; margin-bottom: 30px; text-align: left;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                <span style="color: var(--text-secondary);">Paket</span>
-                <span style="font-weight: 600;"><?= $order['package_name'] ?></span>
+        <div class="mb-20" style="background-color: var(--bg-main); padding: 32px; border-radius: var(--radius-lg); text-align: left;">
+            <div class="flex justify-between mb-20">
+                <span class="text-muted">Paket Internet</span>
+                <span style="font-weight: 700; color: var(--text-main);"><?= $order['package_name'] ?></span>
             </div>
-            <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: 800; border-top: 1px solid var(--border-color); padding-top: 10px; margin-top: 10px;">
+            <div class="flex justify-between py-20" style="font-size: 20px; font-weight: 800; border-top: 1px solid var(--border); margin-top: 20px;">
                 <span>Total Tagihan</span>
-                <span style="color: var(--primary-color);">Rp <?= number_format($order['total_amount'], 0, ',', '.') ?></span>
+                <span style="color: var(--primary); letter-spacing: -0.025em;">Rp <?= number_format($order['total_amount'], 0, ',', '.') ?></span>
             </div>
         </div>
 
-        <button id="pay-button" class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 16px;">Bayar Sekarang</button>
+        <button id="pay-button" class="btn btn-primary w-full" style="padding: 16px; font-size: 16px; box-shadow: var(--shadow-lg);">Bayar Sekarang</button>
 
-        <p style="font-size: 12px; color: var(--text-secondary); margin-top: 20px;">
-            <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">lock</span> Keamanan transaksi Anda terjamin oleh Midtrans.
+        <p class="mt-20" style="font-size: 13px; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <span class="material-symbols-outlined" style="font-size: 18px;">lock</span> Keamanan transaksi Anda terjamin oleh Midtrans.
         </p>
     </div>
 </div>
 
-<!-- Midtrans Snap JS -->
 <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="<?= MIDTRANS_CLIENT_KEY ?>"></script>
 <script type="text/javascript">
     document.getElementById('pay-button').onclick = function(){
-        // In simulation, we just redirect to dashboard with success
         alert('Ini adalah simulasi Midtrans Snap. Di sistem nyata, Anda perlu menginstal library Midtrans-PHP dan mengonfigurasi Server Key yang valid.');
         window.location.href = 'user/dashboard.php?status=success';
-
-        /*
-        Contoh Implementasi Backend (pay.php):
-
-        require_once 'vendor/autoload.php';
-        \Midtrans\Config::$serverKey = MIDTRANS_SERVER_KEY;
-        \Midtrans\Config::$isProduction = MIDTRANS_IS_PRODUCTION;
-        \Midtrans\Config::$isSanitized = MIDTRANS_IS_SANITIZED;
-        \Midtrans\Config::$is3ds = MIDTRANS_IS_3DS;
-
-        $params = [
-            'transaction_details' => [
-                'order_id' => $order['order_number'],
-                'gross_amount' => (int)$order['total_amount'],
-            ],
-            'customer_details' => [
-                'first_name' => $order['user_name'],
-                'email' => $order['user_email'],
-                'phone' => $order['user_phone'],
-            ],
-        ];
-
-        $snap_token = \Midtrans\Snap::getSnapToken($params);
-
-        --------------------------------------------------
-
-        Real code for JS:
-        snap.pay('<?= $snap_token ?>', {
-            onSuccess: function(result){ window.location.href = 'user/dashboard.php?status=success'; },
-            onPending: function(result){ window.location.href = 'user/dashboard.php?status=pending'; },
-            onError: function(result){ alert("Pembayaran gagal!"); },
-            onClose: function(){ alert('Anda menutup popup tanpa menyelesaikan pembayaran'); }
-        });
-        */
     };
 </script>
 

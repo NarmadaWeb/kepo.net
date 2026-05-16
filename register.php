@@ -34,13 +34,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 include 'includes/header.php';
 ?>
 
-<div class="container" style="max-width: 450px; margin-top: 80px;">
+<div class="container" style="max-width: 500px; padding: 80px 0;">
     <div class="card">
-        <h2 style="text-align: center;">Daftar Akun</h2>
-        <p style="text-align: center; color: var(--text-secondary); margin-bottom: 20px;">Mulai berlangganan internet cepat hari ini</p>
+        <h2 class="text-center">Daftar Akun</h2>
+        <p class="text-center text-muted mb-20">Mulai berlangganan internet cepat hari ini</p>
 
         <?php if ($error): ?>
-            <div style="background: #ffebee; color: #c62828; padding: 10px; border-radius: 8px; margin-bottom: 20px; font-size: 14px;">
+            <div class="badge badge-error mb-20 w-full text-center" style="display: block; padding: 12px; border-radius: var(--radius-md);">
                 <?= $error ?>
             </div>
         <?php endif; ?>
@@ -68,11 +68,11 @@ include 'includes/header.php';
                     <input type="password" name="confirm_password" required placeholder="••••••••">
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary" style="width: 100%;">Daftar</button>
+            <button type="submit" class="btn btn-primary w-full">Daftar</button>
         </form>
 
-        <p style="text-align: center; margin-top: 20px; font-size: 14px; color: var(--text-secondary);">
-            Sudah punya akun? <a href="login.php" style="color: var(--primary-color);">Masuk</a>
+        <p class="text-center mt-20" style="font-size: 14px; color: var(--text-muted);">
+            Sudah punya akun? <a href="login.php" style="color: var(--primary); font-weight: 600;">Masuk</a>
         </p>
     </div>
 </div>

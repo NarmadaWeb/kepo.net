@@ -9,7 +9,6 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Get Order History
 $stmt = $pdo->prepare("SELECT o.*, p.name as package_name, p.speed
                        FROM orders o
                        JOIN packages p ON o.package_id = p.id
@@ -21,17 +20,17 @@ $orders = $stmt->fetchAll();
 include '../includes/header.php';
 ?>
 
-<div class="container" style="padding: 50px 0;">
-    <div style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
+<div class="container" style="padding: 60px 0;">
+    <div class="flex justify-between items-center mb-20" style="flex-wrap: wrap; gap: 20px;">
         <div>
-            <h1>Dashboard Pelanggan</h1>
-            <p style="color: var(--text-secondary);">Halo, <strong><?= $_SESSION['user_name'] ?></strong>. Selamat datang kembali.</p>
+            <h1 style="font-size: 32px; letter-spacing: -0.025em;">Dashboard Pelanggan</h1>
+            <p class="text-muted">Halo, <strong><?= $_SESSION['user_name'] ?></strong>. Selamat datang kembali.</p>
         </div>
         <a href="../packages.php" class="btn btn-primary">Pesan WiFi Baru</a>
     </div>
 
     <div class="card">
-        <h3 style="margin-bottom: 20px;">Riwayat Pesanan</h3>
+        <h3 class="mb-20">Riwayat Pesanan</h3>
         <div class="table-container">
             <table>
                 <thead>
@@ -47,17 +46,18 @@ include '../includes/header.php';
                 <tbody>
                     <?php if (empty($orders)): ?>
                         <tr>
-                            <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-secondary);">
-                                Anda belum memiliki pesanan. <a href="../packages.php" style="color: var(--primary-color);">Pesan sekarang!</a>
+                            <td colspan="6" class="text-center" style="padding: 60px;">
+                                <div class="text-muted mb-20">Anda belum memiliki pesanan.</div>
+                                <a href="../packages.php" class="btn btn-outline">Pesan sekarang!</a>
                             </td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($orders as $order): ?>
                             <tr>
-                                <td style="font-family: 'JetBrains Mono', monospace; font-size: 13px;"><?= $order['order_number'] ?></td>
+                                <td style="font-family: monospace; font-weight: 600; color: var(--primary);"><?= $order['order_number'] ?></td>
                                 <td>
                                     <strong><?= $order['package_name'] ?></strong><br>
-                                    <small style="color: var(--text-secondary);"><?= $order['speed'] ?></small>
+                                    <small class="text-muted"><?= $order['speed'] ?></small>
                                 </td>
                                 <td><?= date('d M Y', strtotime($order['created_at'])) ?></td>
                                 <td><strong>Rp <?= number_format($order['total_amount'], 0, ',', '.') ?></strong></td>
@@ -76,11 +76,11 @@ include '../includes/header.php';
                                     <span class="badge <?= $current_status[0] ?>"><?= $current_status[1] ?></span>
                                 </td>
                                 <td>
-                                    <div style="display: flex; gap: 10px;">
+                                    <div class="flex gap-10">
                                         <?php if ($order['status'] == 'waiting_payment'): ?>
-                                            <a href="../pay.php?order_id=<?= $order['id'] ?>" class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;">Bayar</a>
+                                            <a href="../pay.php?order_id=<?= $order['id'] ?>" class="btn btn-primary" style="padding: 8px 16px; font-size: 12px;">Bayar</a>
                                         <?php endif; ?>
-                                        <a href="track.php?order_number=<?= $order['order_number'] ?>" class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;">Lacak</a>
+                                        <a href="track.php?order_number=<?= $order['order_number'] ?>" class="btn btn-outline" style="padding: 8px 16px; font-size: 12px;">Lacak</a>
                                     </div>
                                 </td>
                             </tr>
