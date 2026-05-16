@@ -38,6 +38,12 @@ if ($result) {
         $stmt = $pdo->prepare("INSERT INTO payments (order_id, transaction_id, payment_type, gross_amount, transaction_status, transaction_time)
                                VALUES (?, ?, ?, ?, ?, NOW())");
         $stmt->execute([$db_order_id, $transaction_id, $payment_type, $gross_amount, $transaction_status]);
+
+        // Also update snap_token in orders if not already there (optional, but good for consistency)
+        if (isset($result['snap_token'])) {
+            $stmt = $pdo->prepare("UPDATE orders SET snap_token = ? WHERE id = ? AND (snap_token IS NULL OR snap_token = '')");
+            $stmt->execute([$result['snap_token'], $db_order_id]);
+        }
     }
 }
 

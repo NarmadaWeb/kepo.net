@@ -42,6 +42,7 @@ CREATE TABLE orders (
     installation_date DATETIME,
     technician_id INT,
     ktp_image VARCHAR(255),
+    snap_token VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (package_id) REFERENCES packages(id),
