@@ -9,7 +9,6 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
 
 $message = '';
 
-// Add Technician
 if (isset($_POST['add_technician'])) {
     $name = $_POST['name'];
     $employee_id = $_POST['employee_id'];
@@ -22,7 +21,6 @@ if (isset($_POST['add_technician'])) {
     }
 }
 
-// Delete Technician
 if (isset($_GET['delete'])) {
     $id = $_GET['delete'];
     $stmt = $pdo->prepare("DELETE FROM technicians WHERE id = ?");
@@ -39,82 +37,75 @@ include 'includes/sidebar.php';
 
 <main class="main-content">
     <div class="admin-topbar">
-        <h2 style="font-size: 18px;">Manajemen Teknisi</h2>
+        <h1 style="font-size: 24px; letter-spacing: -0.025em;">Manajemen Teknisi</h1>
     </div>
 
-    <div style="padding: 30px 0;">
-        <?php if ($message): ?>
-            <div class="badge badge-success" style="display: block; padding: 10px; margin-bottom: 20px;"><?= $message ?></div>
-        <?php endif; ?>
+    <?php if ($message): ?>
+        <div class="badge badge-success mb-20 w-full" style="display: block; padding: 12px;"><?= $message ?></div>
+    <?php endif; ?>
 
-        <div class="grid-3">
-            <div style="grid-column: span 1;">
-                <div class="card">
-                    <h3>Tambah Teknisi</h3>
-                    <form action="" method="POST" style="margin-top: 20px;">
-                        <div class="form-group">
-                            <label>Nama Lengkap</label>
-                            <input type="text" name="name" required placeholder="Contoh: Budi Santoso">
-                        </div>
-                        <div class="form-group">
-                            <label>ID Pegawai</label>
-                            <input type="text" name="employee_id" required placeholder="Contoh: TEK-001">
-                        </div>
-                        <div class="form-group">
-                            <label>Nomor HP</label>
-                            <input type="tel" name="phone" required placeholder="0812xxxxxxxx">
-                        </div>
-                        <div class="form-group">
-                            <label>Status</label>
-                            <select name="status">
-                                <option value="offline">Offline</option>
-                                <option value="online">Online</option>
-                            </select>
-                        </div>
-                        <button type="submit" name="add_technician" class="btn btn-primary" style="width: 100%;">Simpan Data</button>
-                    </form>
+    <div class="grid-3" style="grid-template-columns: 1fr 2fr;">
+        <div class="card">
+            <h3 class="mb-20">Tambah Teknisi</h3>
+            <form action="" method="POST">
+                <div class="form-group">
+                    <label>Nama Lengkap</label>
+                    <input type="text" name="name" required placeholder="Budi Santoso">
                 </div>
-            </div>
+                <div class="form-group">
+                    <label>ID Pegawai</label>
+                    <input type="text" name="employee_id" required placeholder="TEK-001">
+                </div>
+                <div class="form-group">
+                    <label>Nomor HP</label>
+                    <input type="tel" name="phone" required placeholder="0812xxxxxxxx">
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select name="status">
+                        <option value="online">Online (Siap Tugas)</option>
+                        <option value="offline">Offline (Istirahat)</option>
+                    </select>
+                </div>
+                <button type="submit" name="add_technician" class="btn btn-primary w-full">Simpan Data</button>
+            </form>
+        </div>
 
-            <div style="grid-column: span 2;">
-                <div class="card">
-                    <h3>Daftar Teknisi</h3>
-                    <div class="table-container" style="margin-top: 20px;">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Teknisi</th>
-                                    <th>ID Pegawai</th>
-                                    <th>No. HP</th>
-                                    <th>Status</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($technicians as $t): ?>
-                                    <tr>
-                                        <td>
-                                            <div style="display: flex; align-items: center; gap: 10px;">
-                                                <img src="https://ui-avatars.com/api/?name=<?= urlencode($t['name']) ?>" style="width: 32px; height: 32px; border-radius: 50%;">
-                                                <strong><?= $t['name'] ?></strong>
-                                            </div>
-                                        </td>
-                                        <td style="font-family: 'JetBrains Mono';"><?= $t['employee_id'] ?></td>
-                                        <td><?= $t['phone'] ?></td>
-                                        <td>
-                                            <span class="badge <?= $t['status'] == 'online' ? 'badge-success' : 'badge-outline' ?>">
-                                                <?= $t['status'] ?>
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <a href="?delete=<?= $t['id'] ?>" class="btn btn-outline btn-delete" style="padding: 5px; color: var(--error-color); border: none;"><span class="material-symbols-outlined">delete</span></a>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <div class="table-container" style="border: none; border-radius: 0;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Teknisi</th>
+                            <th>ID Pegawai</th>
+                            <th>No. HP</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($technicians as $t): ?>
+                            <tr>
+                                <td>
+                                    <div class="flex items-center gap-10">
+                                        <img src="https://ui-avatars.com/api/?name=<?= urlencode($t['name']) ?>&background=random" style="width: 32px; height: 32px; border-radius: 50%;">
+                                        <span style="font-weight: 600;"><?= $t['name'] ?></span>
+                                    </div>
+                                </td>
+                                <td style="font-family: monospace;"><?= $t['employee_id'] ?></td>
+                                <td><?= $t['phone'] ?></td>
+                                <td>
+                                    <span class="badge <?= $t['status'] == 'online' ? 'badge-success' : 'badge-outline' ?>">
+                                        <?= $t['status'] ?>
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="?delete=<?= $t['id'] ?>" class="btn btn-outline" style="padding: 6px; color: var(--danger); border: none;"><span class="material-symbols-outlined">delete</span></a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

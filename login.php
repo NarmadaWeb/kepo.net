@@ -31,14 +31,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 include 'includes/header.php';
 ?>
 
-<div class="container" style="max-width: 400px; margin-top: 100px;">
+<div class="container" style="max-width: 450px; padding: 100px 0;">
     <div class="card">
-        <h2 style="text-align: center;">Masuk</h2>
-        <p style="text-align: center; color: var(--text-secondary); margin-bottom: 20px;">Selamat datang kembali di kepo.net</p>
+        <h2 class="text-center">Masuk</h2>
+        <p class="text-center text-muted mb-20">Selamat datang kembali di kepo.net</p>
 
         <?php if ($error): ?>
-            <div style="background: #ffebee; color: #c62828; padding: 10px; border-radius: 8px; margin-bottom: 20px; font-size: 14px;">
+            <div class="badge badge-error mb-20 w-full text-center" style="display: block; padding: 12px; border-radius: var(--radius-md);">
                 <?= $error ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (isset($_GET['registered'])): ?>
+            <div class="badge badge-success mb-20 w-full text-center" style="display: block; padding: 12px; border-radius: var(--radius-md);">
+                Pendaftaran berhasil! Silakan masuk.
             </div>
         <?php endif; ?>
 
@@ -51,11 +57,11 @@ include 'includes/header.php';
                 <label>Password</label>
                 <input type="password" name="password" required placeholder="••••••••">
             </div>
-            <button type="submit" class="btn btn-primary" style="width: 100%;">Masuk</button>
+            <button type="submit" class="btn btn-primary w-full">Masuk</button>
         </form>
 
-        <p style="text-align: center; margin-top: 20px; font-size: 14px; color: var(--text-secondary);">
-            Belum punya akun? <a href="register.php" style="color: var(--primary-color);">Daftar sekarang</a>
+        <p class="text-center mt-20" style="font-size: 14px; color: var(--text-muted);">
+            Belum punya akun? <a href="register.php" style="color: var(--primary); font-weight: 600;">Daftar sekarang</a>
         </p>
     </div>
 </div>

@@ -64,32 +64,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 include 'includes/header.php';
 ?>
 
-<div class="container" style="padding: 50px 0;">
-    <div style="display: flex; gap: 40px; flex-wrap: wrap;">
+<div class="container" style="padding: 60px 0;">
+    <div class="flex gap-10" style="align-items: flex-start; flex-wrap: wrap;">
         <!-- Left side: Form -->
-        <div style="flex: 2; min-width: 300px;">
+        <div style="flex: 2; min-width: 350px;">
             <div class="card">
-                <h2>Lengkapi Data Pemasangan</h2>
-                <p style="color: var(--text-secondary); margin-bottom: 30px;">Silakan isi formulir di bawah ini untuk proses registrasi dan instalasi.</p>
+                <h2 class="mb-20">Lengkapi Data Pemasangan</h2>
+                <p class="text-muted mb-20">Silakan isi formulir di bawah ini untuk proses registrasi dan instalasi.</p>
 
                 <?php if ($error): ?>
-                    <div class="badge badge-error" style="display: block; padding: 10px; margin-bottom: 20px;"><?= $error ?></div>
+                    <div class="badge badge-error mb-20 w-full" style="display: block; padding: 12px;"><?= $error ?></div>
                 <?php endif; ?>
 
                 <form action="" method="POST" enctype="multipart/form-data">
-                    <div style="margin-bottom: 30px;">
-                        <h3 style="font-size: 18px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 20px;">Data Personal</h3>
+                    <div class="mb-20">
+                        <h3 class="mb-20" style="font-size: 18px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">Data Personal</h3>
                         <div class="form-group">
                             <label>Nama Lengkap (Sesuai KTP)</label>
-                            <input type="text" value="<?= $_SESSION['user_name'] ?>" disabled>
+                            <input type="text" value="<?= $_SESSION['user_name'] ?>" disabled style="background-color: var(--bg-main);">
                         </div>
                     </div>
 
-                    <div style="margin-bottom: 30px;">
-                        <h3 style="font-size: 18px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 20px;">Alamat Instalasi</h3>
+                    <div class="mb-20">
+                        <h3 class="mb-20" style="font-size: 18px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">Alamat Instalasi</h3>
                         <div class="form-group">
                             <label>Alamat Lengkap</label>
-                            <textarea name="address" required placeholder="Nama jalan, nomor rumah, RT/RW..." style="height: 100px;"></textarea>
+                            <textarea name="address" required placeholder="Nama jalan, nomor rumah, RT/RW..." style="height: 120px;"></textarea>
                         </div>
                         <div class="grid-2">
                             <div class="form-group">
@@ -103,18 +103,18 @@ include 'includes/header.php';
                         </div>
                     </div>
 
-                    <div style="margin-bottom: 30px;">
-                        <h3 style="font-size: 18px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 20px;">Dokumen Pendukung</h3>
+                    <div class="mb-20">
+                        <h3 class="mb-20" style="font-size: 18px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">Dokumen Pendukung</h3>
                         <div class="form-group">
                             <label>Foto KTP</label>
-                            <input type="file" name="ktp_image" accept="image/*" required>
-                            <p style="font-size: 12px; color: var(--text-secondary); margin-top: 5px;">Format: JPG, PNG. Maksimal 2MB.</p>
+                            <input type="file" name="ktp_image" accept="image/*" required style="padding: 8px;">
+                            <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">Format: JPG, PNG. Maksimal 2MB.</p>
                         </div>
                     </div>
 
-                    <div style="display: flex; gap: 15px; margin-top: 40px;">
-                        <a href="packages.php" class="btn btn-outline">Kembali</a>
-                        <button type="submit" class="btn btn-primary" style="flex-grow: 1;">Lanjut ke Pembayaran</button>
+                    <div class="flex gap-10 mt-20" style="margin-top: 40px;">
+                        <a href="packages.php" class="btn btn-outline" style="flex: 1;">Kembali</a>
+                        <button type="submit" class="btn btn-primary" style="flex: 2;">Lanjut ke Pembayaran</button>
                     </div>
                 </form>
             </div>
@@ -123,34 +123,34 @@ include 'includes/header.php';
         <!-- Right side: Summary -->
         <div style="flex: 1; min-width: 300px;">
             <div class="card" style="position: sticky; top: 100px;">
-                <h3 style="font-size: 18px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
-                    <span class="material-symbols-outlined">receipt_long</span> Ringkasan Pesanan
+                <h3 class="mb-20 flex items-center gap-10" style="font-size: 18px;">
+                    <span class="material-symbols-outlined" style="color: var(--primary);">receipt_long</span> Ringkasan Pesanan
                 </h3>
 
-                <div style="background-color: var(--surface-color); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                    <div style="font-weight: 700; color: var(--primary-color);"><?= $package['name'] ?></div>
-                    <div style="font-size: 14px; color: var(--text-secondary);"><?= $package['speed'] ?> Fiber Internet</div>
+                <div class="mb-20" style="background-color: var(--bg-main); padding: 20px; border-radius: var(--radius-md);">
+                    <div style="font-weight: 700; color: var(--primary); font-size: 18px;"><?= $package['name'] ?></div>
+                    <div class="text-muted" style="font-size: 14px;"><?= $package['speed'] ?> Fiber Internet</div>
                 </div>
 
-                <div style="display: flex; flex-direction: column; gap: 10px; font-size: 14px; margin-bottom: 20px;">
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="color: var(--text-secondary);">Biaya Berlangganan (Bulan 1)</span>
-                        <span>Rp <?= number_format($package['monthly_price'], 0, ',', '.') ?></span>
+                <div class="flex mb-20" style="flex-direction: column; gap: 12px; font-size: 14px;">
+                    <div class="flex justify-between">
+                        <span class="text-muted">Biaya Berlangganan (Bulan 1)</span>
+                        <span style="font-weight: 600;">Rp <?= number_format($package['monthly_price'], 0, ',', '.') ?></span>
                     </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="color: var(--text-secondary);">Biaya Instalasi</span>
-                        <span>Rp <?= number_format($package['installation_fee'], 0, ',', '.') ?></span>
+                    <div class="flex justify-between">
+                        <span class="text-muted">Biaya Instalasi</span>
+                        <span style="font-weight: 600;">Rp <?= number_format($package['installation_fee'], 0, ',', '.') ?></span>
                     </div>
                 </div>
 
-                <div style="border-top: 1px solid var(--border-color); padding-top: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <div class="flex justify-between items-center mb-20 py-20" style="border-top: 1px solid var(--border); margin-top: 20px;">
                     <span style="font-weight: 600;">Total Pembayaran</span>
-                    <span style="font-size: 20px; font-weight: 800; color: var(--primary-color);">Rp <?= number_format($package['monthly_price'] + $package['installation_fee'], 0, ',', '.') ?></span>
+                    <span style="font-size: 24px; font-weight: 800; color: var(--primary); letter-spacing: -0.025em;">Rp <?= number_format($package['monthly_price'] + $package['installation_fee'], 0, ',', '.') ?></span>
                 </div>
 
-                <div style="background-color: #fff8e1; border: 1px solid #ffe082; padding: 12px; border-radius: 8px; display: flex; gap: 10px;">
-                    <span class="material-symbols-outlined" style="color: #f57c00; font-size: 20px;">info</span>
-                    <p style="font-size: 12px; color: #5d4037; line-height: 1.4;">
+                <div style="background-color: #fffbeb; border: 1px solid #fef3c7; padding: 16px; border-radius: var(--radius-md); display: flex; gap: 12px;">
+                    <span class="material-symbols-outlined" style="color: var(--accent); font-size: 20px;">info</span>
+                    <p style="font-size: 12px; color: #92400e; line-height: 1.5;">
                         Tagihan selanjutnya adalah Rp <?= number_format($package['monthly_price'], 0, ',', '.') ?> per bulan. Biaya instalasi hanya dibayarkan satu kali di awal.
                     </p>
                 </div>
