@@ -1,6 +1,7 @@
 <?php
 require_once 'config/config.php';
 require_once 'config/database.php';
+require_once 'includes/midtrans_helper.php';
 
 $order_id = $_GET['order_id'] ?? null;
 if (!$order_id || !isset($_SESSION['user_id'])) {
@@ -23,9 +24,25 @@ if (!$order) {
 
 $snap_token = $order['snap_token'];
 if (!$snap_token) {
-    $snap_token = 'dummy-token-' . uniqid();
-    $stmt = $pdo->prepare("UPDATE orders SET snap_token = ?, status = 'waiting_payment' WHERE id = ?");
-    $stmt->execute([$snap_token, $order_id]);
+    $order_details = [
+        'order_id' => $order['order_number'],
+        'gross_amount' => (int)$order['total_amount'],
+    ];
+
+    $customer_details = [
+        'first_name' => $order['user_name'],
+        'email' => $order['user_email'],
+        'phone' => $order['user_phone'],
+    ];
+
+    $snap_token = MidtransHelper::getSnapToken($order_details, $customer_details);
+
+    if ($snap_token) {
+        $stmt = $pdo->prepare("UPDATE orders SET snap_token = ?, status = 'waiting_payment' WHERE id = ?");
+        $stmt->execute([$snap_token, $order_id]);
+    } else {
+        $error = "Gagal mendapatkan token pembayaran. Silakan coba lagi nanti.";
+    }
 }
 
 include 'includes/header.php';
@@ -58,11 +75,27 @@ include 'includes/header.php';
     </div>
 </div>
 
-<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="<?= MIDTRANS_CLIENT_KEY ?>"></script>
+<script src="<?= MIDTRANS_IS_PRODUCTION ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js' ?>" data-client-key="<?= MIDTRANS_CLIENT_KEY ?>"></script>
 <script type="text/javascript">
     document.getElementById('pay-button').onclick = function(){
-        alert('Ini adalah simulasi Midtrans Snap. Di sistem nyata, Anda perlu menginstal library Midtrans-PHP dan mengonfigurasi Server Key yang valid.');
-        window.location.href = 'user/dashboard.php?status=success';
+        // SnapToken acquired from previous step
+        snap.pay('<?= $snap_token ?>', {
+            // Optional
+            onSuccess: function(result){
+                /* You may add your own js here, this is just example */
+                window.location.href = 'user/dashboard.php?status=success&order_id=<?= $order['order_number'] ?>';
+            },
+            // Optional
+            onPending: function(result){
+                /* You may add your own js here, this is just example */
+                window.location.href = 'user/dashboard.php?status=pending&order_id=<?= $order['order_number'] ?>';
+            },
+            // Optional
+            onError: function(result){
+                /* You may add your own js here, this is just example */
+                window.location.href = 'user/dashboard.php?status=error&order_id=<?= $order['order_number'] ?>';
+            }
+        });
     };
 </script>
 
