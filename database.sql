@@ -82,6 +82,20 @@ CREATE TABLE odp_points (
     FOREIGN KEY (area_id) REFERENCES coverage_areas(id)
 );
 
+CREATE TABLE monthly_bills (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    bill_number VARCHAR(50) UNIQUE,
+    order_id INT,
+    amount DECIMAL(10,2),
+    bill_month INT,
+    bill_year INT,
+    status ENUM('unpaid', 'paid') DEFAULT 'unpaid',
+    snap_token VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    paid_at DATETIME,
+    FOREIGN KEY (order_id) REFERENCES orders(id)
+);
+
 -- Insert sample admin
 INSERT INTO users (name, email, password, role) VALUES ('Admin Kepo', 'admin@kepo.net', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin');
 

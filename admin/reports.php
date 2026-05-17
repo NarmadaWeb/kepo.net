@@ -7,11 +7,19 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
     exit;
 }
 
-$monthly_revenue = $pdo->query("SELECT DATE_FORMAT(created_at, '%M %Y') as month, SUM(total_amount) as total
-                                FROM orders
-                                WHERE status IN ('paid', 'processing', 'completed')
+$monthly_revenue = $pdo->query("SELECT month_year as month, SUM(total) as total FROM (
+                                    SELECT DATE_FORMAT(created_at, '%M %Y') as month_year, SUM(total_amount) as total, MIN(created_at) as sort_date
+                                    FROM orders
+                                    WHERE status IN ('paid', 'processing', 'completed')
+                                    GROUP BY month_year
+                                    UNION ALL
+                                    SELECT DATE_FORMAT(paid_at, '%M %Y') as month_year, SUM(amount) as total, MIN(paid_at) as sort_date
+                                    FROM monthly_bills
+                                    WHERE status = 'paid'
+                                    GROUP BY month_year
+                                ) combined_revenue
                                 GROUP BY month
-                                ORDER BY MIN(created_at) ASC")->fetchAll();
+                                ORDER BY MIN(sort_date) ASC")->fetchAll();
 
 $package_stats = $pdo->query("SELECT p.name, COUNT(o.id) as total
                               FROM packages p

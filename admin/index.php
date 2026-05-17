@@ -12,7 +12,10 @@ $total_customers = $pdo->query("SELECT COUNT(*) FROM users WHERE role = 'user'")
 $total_orders_today = $pdo->query("SELECT COUNT(*) FROM orders WHERE DATE(created_at) = CURDATE()")->fetchColumn();
 $pending_payments = $pdo->query("SELECT COUNT(*) FROM orders WHERE status = 'waiting_payment'")->fetchColumn();
 $active_installations = $pdo->query("SELECT COUNT(*) FROM orders WHERE status = 'processing'")->fetchColumn();
-$total_revenue = $pdo->query("SELECT SUM(total_amount) FROM orders WHERE status IN ('paid', 'processing', 'completed')")->fetchColumn();
+$order_revenue = $pdo->query("SELECT SUM(total_amount) FROM orders WHERE status IN ('paid', 'processing', 'completed')")->fetchColumn() ?: 0;
+$bill_revenue = $pdo->query("SELECT SUM(amount) FROM monthly_bills WHERE status = 'paid'")->fetchColumn() ?: 0;
+$total_revenue = $order_revenue + $bill_revenue;
+$unpaid_bills = $pdo->query("SELECT COUNT(*) FROM monthly_bills WHERE status = 'unpaid'")->fetchColumn();
 $online_technicians = $pdo->query("SELECT COUNT(*) FROM technicians WHERE status = 'online'")->fetchColumn();
 
 // Recent Orders
@@ -67,6 +70,13 @@ include 'includes/sidebar.php';
                 <span class="material-symbols-outlined" style="color: var(--info);">engineering</span>
             </div>
             <span class="value"><?= $active_installations ?></span>
+        </div>
+        <div class="stat-card">
+            <div class="flex justify-between items-center mb-20">
+                <span class="label">Tagihan Belum Bayar</span>
+                <span class="material-symbols-outlined" style="color: var(--danger);">pending_actions</span>
+            </div>
+            <span class="value"><?= $unpaid_bills ?></span>
         </div>
     </div>
 

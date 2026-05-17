@@ -26,34 +26,54 @@ if ($result) {
         exit;
     }
 
-    $stmt = $pdo->prepare("SELECT id FROM orders WHERE order_number = ?");
-    $stmt->execute([$order_id_raw]);
-    $order = $stmt->fetch();
+    if (strpos($order_id_raw, 'BILL-') === 0) {
+        // Handle Monthly Bill
+        $stmt = $pdo->prepare("SELECT id, order_id FROM monthly_bills WHERE bill_number = ?");
+        $stmt->execute([$order_id_raw]);
+        $bill = $stmt->fetch();
 
-    if ($order) {
-        $db_order_id = $order['id'];
+        if ($bill) {
+            if ($transaction_status == 'settlement' || $transaction_status == 'capture') {
+                $stmt = $pdo->prepare("UPDATE monthly_bills SET status = 'paid', paid_at = NOW() WHERE id = ?");
+                $stmt->execute([$bill['id']]);
+            }
 
-        // Update payment status
-        if ($transaction_status == 'settlement' || $transaction_status == 'capture') {
-            $stmt = $pdo->prepare("UPDATE orders SET status = 'paid' WHERE id = ?");
-            $stmt->execute([$db_order_id]);
-        } else if ($transaction_status == 'pending') {
-            $stmt = $pdo->prepare("UPDATE orders SET status = 'waiting_payment' WHERE id = ?");
-            $stmt->execute([$db_order_id]);
-        } else if ($transaction_status == 'deny' || $transaction_status == 'expire' || $transaction_status == 'cancel') {
-            $stmt = $pdo->prepare("UPDATE orders SET status = 'cancelled' WHERE id = ?");
-            $stmt->execute([$db_order_id]);
+            // Log to payments table (linked to original order)
+            $stmt = $pdo->prepare("INSERT INTO payments (order_id, transaction_id, payment_type, gross_amount, transaction_status, transaction_time)
+                                   VALUES (?, ?, ?, ?, ?, NOW())");
+            $stmt->execute([$bill['order_id'], $transaction_id, $payment_type, $gross_amount, $transaction_status]);
         }
+    } else {
+        // Handle Initial Order
+        $stmt = $pdo->prepare("SELECT id FROM orders WHERE order_number = ?");
+        $stmt->execute([$order_id_raw]);
+        $order = $stmt->fetch();
 
-        // Log to payments table
-        $stmt = $pdo->prepare("INSERT INTO payments (order_id, transaction_id, payment_type, gross_amount, transaction_status, transaction_time)
-                               VALUES (?, ?, ?, ?, ?, NOW())");
-        $stmt->execute([$db_order_id, $transaction_id, $payment_type, $gross_amount, $transaction_status]);
+        if ($order) {
+            $db_order_id = $order['id'];
 
-        // Also update snap_token in orders if not already there (optional, but good for consistency)
-        if (isset($result['snap_token'])) {
-            $stmt = $pdo->prepare("UPDATE orders SET snap_token = ? WHERE id = ? AND (snap_token IS NULL OR snap_token = '')");
-            $stmt->execute([$result['snap_token'], $db_order_id]);
+            // Update payment status
+            if ($transaction_status == 'settlement' || $transaction_status == 'capture') {
+                $stmt = $pdo->prepare("UPDATE orders SET status = 'paid' WHERE id = ?");
+                $stmt->execute([$db_order_id]);
+            } else if ($transaction_status == 'pending') {
+                $stmt = $pdo->prepare("UPDATE orders SET status = 'waiting_payment' WHERE id = ?");
+                $stmt->execute([$db_order_id]);
+            } else if ($transaction_status == 'deny' || $transaction_status == 'expire' || $transaction_status == 'cancel') {
+                $stmt = $pdo->prepare("UPDATE orders SET status = 'cancelled' WHERE id = ?");
+                $stmt->execute([$db_order_id]);
+            }
+
+            // Log to payments table
+            $stmt = $pdo->prepare("INSERT INTO payments (order_id, transaction_id, payment_type, gross_amount, transaction_status, transaction_time)
+                                   VALUES (?, ?, ?, ?, ?, NOW())");
+            $stmt->execute([$db_order_id, $transaction_id, $payment_type, $gross_amount, $transaction_status]);
+
+            // Also update snap_token in orders if not already there
+            if (isset($result['snap_token'])) {
+                $stmt = $pdo->prepare("UPDATE orders SET snap_token = ? WHERE id = ? AND (snap_token IS NULL OR snap_token = '')");
+                $stmt->execute([$result['snap_token'], $db_order_id]);
+            }
         }
     }
 }
