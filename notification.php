@@ -14,6 +14,17 @@ if ($result) {
     $payment_type = $result['payment_type'];
     $transaction_id = $result['transaction_id'];
     $gross_amount = $result['gross_amount'];
+    $status_code = $result['status_code'];
+    $signature_key = $result['signature_key'];
+
+    // Verify signature
+    $server_key = MIDTRANS_SERVER_KEY;
+    $hashed = hash("sha512", $order_id_raw . $status_code . $gross_amount . $server_key);
+    if ($hashed !== $signature_key) {
+        error_log("Midtrans Notification: Invalid signature");
+        http_response_code(403);
+        exit;
+    }
 
     $stmt = $pdo->prepare("SELECT id FROM orders WHERE order_number = ?");
     $stmt->execute([$order_id_raw]);

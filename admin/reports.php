@@ -11,7 +11,7 @@ $monthly_revenue = $pdo->query("SELECT DATE_FORMAT(created_at, '%M %Y') as month
                                 FROM orders
                                 WHERE status IN ('paid', 'processing', 'completed')
                                 GROUP BY month
-                                ORDER BY created_at ASC")->fetchAll();
+                                ORDER BY MIN(created_at) ASC")->fetchAll();
 
 $package_stats = $pdo->query("SELECT p.name, COUNT(o.id) as total
                               FROM packages p

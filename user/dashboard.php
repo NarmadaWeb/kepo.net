@@ -9,6 +9,37 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
+// Check and update order status if coming from payment
+if (isset($_GET['status']) && isset($_GET['order_id'])) {
+    require_once '../includes/midtrans_helper.php';
+    $order_number = $_GET['order_id'];
+
+    $stmt = $pdo->prepare("SELECT id, status FROM orders WHERE order_number = ? AND user_id = ?");
+    $stmt->execute([$order_number, $user_id]);
+    $order_to_check = $stmt->fetch();
+
+    if ($order_to_check && ($order_to_check['status'] == 'waiting_payment' || $order_to_check['status'] == 'pending')) {
+        $status_data = MidtransHelper::getTransactionStatus($order_number);
+        if ($status_data) {
+            $transaction_status = $status_data['transaction_status'];
+            $new_status = null;
+
+            if ($transaction_status == 'settlement' || $transaction_status == 'capture') {
+                $new_status = 'paid';
+            } else if ($transaction_status == 'pending') {
+                $new_status = 'waiting_payment';
+            } else if ($transaction_status == 'deny' || $transaction_status == 'expire' || $transaction_status == 'cancel') {
+                $new_status = 'cancelled';
+            }
+
+            if ($new_status) {
+                $stmt = $pdo->prepare("UPDATE orders SET status = ? WHERE id = ?");
+                $stmt->execute([$new_status, $order_to_check['id']]);
+            }
+        }
+    }
+}
+
 $stmt = $pdo->prepare("SELECT o.*, p.name as package_name, p.speed
                        FROM orders o
                        JOIN packages p ON o.package_id = p.id
