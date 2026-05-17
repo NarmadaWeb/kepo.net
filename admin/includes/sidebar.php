@@ -17,6 +17,11 @@
                 </a>
             </li>
             <li>
+                <a href="<?= BASE_URL ?>admin/bills.php" class="btn btn-outline <?= (basename($_SERVER['PHP_SELF']) == 'bills.php' ? 'active' : '') ?>" style="width: 100%; justify-content: flex-start; border: none; <?= (basename($_SERVER['PHP_SELF']) == 'bills.php' ? 'background: #eff6ff; color: var(--primary);' : '') ?>">
+                    <span class="material-symbols-outlined">payments</span> Tagihan Bulanan
+                </a>
+            </li>
+            <li>
                 <a href="<?= BASE_URL ?>admin/technicians.php" class="btn btn-outline <?= (basename($_SERVER['PHP_SELF']) == 'technicians.php' ? 'active' : '') ?>" style="width: 100%; justify-content: flex-start; border: none; <?= (basename($_SERVER['PHP_SELF']) == 'technicians.php' ? 'background: #eff6ff; color: var(--primary);' : '') ?>">
                     <span class="material-symbols-outlined">engineering</span> Teknisi
                 </a>

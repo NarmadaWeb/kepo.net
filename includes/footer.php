@@ -14,16 +14,16 @@
                     <h4 style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 20px;">Layanan</h4>
                     <ul style="display: flex; flex-direction: column; gap: 12px; font-size: 14px; color: var(--text-muted);">
                         <li><a href="<?= e(BASE_URL) ?>packages.php" class="nav-link">Paket Internet</a></li>
-                        <li><a href="#" class="nav-link">Internet Bisnis</a></li>
-                        <li><a href="#" class="nav-link">Cek Coverage</a></li>
+                        <li><a href="<?= e(BASE_URL) ?>business.php" class="nav-link">Internet Bisnis</a></li>
+                        <li><a href="<?= e(BASE_URL) ?>coverage_check.php" class="nav-link">Cek Coverage</a></li>
                     </ul>
                 </div>
                 <div>
                     <h4 style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 20px;">Bantuan</h4>
                     <ul style="display: flex; flex-direction: column; gap: 12px; font-size: 14px; color: var(--text-muted);">
-                        <li><a href="#" class="nav-link">Pusat Bantuan</a></li>
+                        <li><a href="<?= e(BASE_URL) ?>help.php" class="nav-link">Pusat Bantuan</a></li>
                         <li><a href="<?= e(BASE_URL) ?>user/track.php" class="nav-link">Lacak Pesanan</a></li>
-                        <li><a href="#" class="nav-link">Kontak Kami</a></li>
+                        <li><a href="<?= e(BASE_URL) ?>contact.php" class="nav-link">Kontak Kami</a></li>
                     </ul>
                 </div>
             </div>
